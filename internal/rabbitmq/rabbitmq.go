@@ -8,6 +8,7 @@ import (
 type Service interface{
 	Connect() error
 	Publish(message string) error
+	Consume()
 }
 
 type RabbitMQ struct{
@@ -62,6 +63,27 @@ func (r *RabbitMQ) Publish(message string) error{
 
 	fmt.Println("Successfully published message to queue")
 	return nil
+}
+
+// Consume - consumes messages from our test queue
+func (r *RabbitMQ) Consume() {
+	msgs, err := r.Channel.Consume(
+		"TestQueue",
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	for msg := range msgs {
+		fmt.Printf("Received message: %s\n", msg.Body)
+	}
 }
 
 func NewRabbitMQService() *RabbitMQ{
