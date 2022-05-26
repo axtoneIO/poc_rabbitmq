@@ -1,0 +1,3 @@
+# github.com/streadway/amqp v1.0.0
+## explicit; go 1.10
+github.com/streadway/amqp
