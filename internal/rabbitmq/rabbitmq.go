@@ -7,12 +7,16 @@ import (
 
 type Service interface{
 	Connect() error
+	Publish(message string) error
 }
 
 type RabbitMQ struct{
 	Conn *amqp.Connection
+	Channel *amqp.Channel
 }
 
+// Connect - will create the RabbitMQ connection and then 
+// it will connect to the selected queue
 func (r *RabbitMQ) Connect() error{
 	fmt.Println("Connecting to RabbitMQ")
 	var err error
@@ -21,6 +25,42 @@ func (r *RabbitMQ) Connect() error{
 		return err
 	}
 	fmt.Println("Successfully connected to RabbitMQ")
+
+	r.Channel, err = r.Conn.Channel()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.Channel.QueueDeclare(
+		"TestQueue",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+
+	return nil
+}
+
+//Publish - will publish a message to the selected channel
+func (r *RabbitMQ) Publish(message string) error{
+	err := r.Channel.Publish(
+		"",
+		"TestQueue",
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body: []byte(message),
+		},
+	)
+
+	if err != nil{
+		return err
+	}
+
+	fmt.Println("Successfully published message to queue")
 	return nil
 }
 
