@@ -1,21 +1,21 @@
 # poc_rabbitmq
 
-docker run -d --hostname rabbitmq --name test-rabbit -p 15672:15672 -p 5672:5672 rabbit
-mq:3-management
-## _Implementing unit tests for our microservices_
+
+
+## _Let's test the RabbitMQ message broker_
 
 [![N|Solid](https://cldup.com/dTxpPi9lDf.thumb.png)](https://nodesource.com/products/nsolid)
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/axtoneIO)
 
-This is a gRPC micro-services project that is interacting with a postgresql database and is responsible for managing an inventory of Rockets 🚀🚀 I started from scratch and incrementally added new features, the whole purpose of the project was creating a proper configuration for gRPC unit tests..
+This is a golang project that is interacting with the rabbitmq message broker running on a docker container, the whole purpose of the project was to experiment with this technology..
 
 The project covers the following tools:
 ## Tech
 
 Dillinger uses a number of open source projects to work properly:
 
-- [gRPC](https://grpc.io/) - An open source universal RPC framework
+- [RabbitMQ](https://www.rabbitmq.com/) - Most widely deployed open source message broker
 - [Docker](https://www.docker.com/) - Developers Love Docker
 - [Golang](https://go.dev/) - An open source language supported by Google
 
@@ -31,16 +31,24 @@ go mod vendor
 ```
 ## Docker
 
-grpc-testing is very easy to install and deploy in a Docker container.
-
-On both Dockerfile and docker-compose.yml you will find the whole configuration
-for this project to work
+Running the RabbitMQ services is pretty easy using docker, before trying to run
+the project make sure to run the following command:
 
 ```sh
-docker-compose up --build
+docker run -d --hostname rabbitmq --name test-rabbit -p 15672:15672 -p 5672:5672 rabbit
+mq:3-management
 ```
-This will create the database and grpc-microservice containers
-and pull in the necessary dependencies.
+This will pull the official rabbitmq image from Docker hub
+the name assigned to our service in this case will be test-rabbit but you can change it..
+
+For testing purposes you can access the container running using the interactive mode
+```sh
+docker exec -it {container id} bash
+```
+and then publish a message into your queue and see the result on your project running
+```sh
+rabbitmqadmin publish exchange=amq.default routing_key="TestQueue" payload="Hello World from bash"
+```
 
 ## License
 
