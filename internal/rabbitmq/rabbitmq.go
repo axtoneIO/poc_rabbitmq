@@ -15,6 +15,8 @@ type RabbitMQ struct{
 	Channel *amqp.Channel
 }
 
+// Connect - will create the RabbitMQ connection and then 
+// it will connect to the selected queue
 func (r *RabbitMQ) Connect() error{
 	fmt.Println("Connecting to RabbitMQ")
 	var err error
@@ -41,6 +43,7 @@ func (r *RabbitMQ) Connect() error{
 	return nil
 }
 
+//Publish - will publish a message to the selected channel
 func (r *RabbitMQ) Publish(message string) error{
 	err := r.Channel.Publish(
 		"",
